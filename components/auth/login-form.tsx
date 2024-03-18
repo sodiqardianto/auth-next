@@ -17,8 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
+import { login } from "@/actions/login";
+import { useState, useTransition } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export const LoginForm = () => {
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -28,7 +35,17 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    console.log(values);
+    setError("");
+    setSuccess("");
+
+    // setTimeout(() => {
+    startTransition(() => {
+      login(values).then((data: any) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
+    // }, 200);
   };
 
   return (
@@ -50,6 +67,7 @@ export const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={isPending}
                       placeholder="Enter your email"
                       type="email"
                     />
@@ -65,18 +83,30 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="******" type="password" />
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="******"
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormSuccess message="" />
-          <FormError message="" />
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
+          <FormSuccess message={success} />
+          <FormError message={error} />
+          {isPending ? (
+            <Button disabled className="w-full">
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          )}
         </form>
       </Form>
     </CardWrapper>

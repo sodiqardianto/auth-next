@@ -39,14 +39,12 @@ export const RegisterForm = () => {
     setError("");
     setSuccess("");
 
-    // setTimeout(() => {
     startTransition(() => {
       register(values).then((data: any) => {
         setError(data.error);
         setSuccess(data.success);
       });
     });
-    // }, 200);
   };
 
   return (

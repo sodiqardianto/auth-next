@@ -20,8 +20,11 @@ import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
+  const searchParams = useSearchParams()
+  const urlError = searchParams.get("error") == "OAuthAccountNotLinked" ? "Email already in use with dfferent provider!" : ""
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -38,14 +41,13 @@ export const LoginForm = () => {
     setError("");
     setSuccess("");
 
-    // setTimeout(() => {
     startTransition(() => {
       login(values).then((data: any) => {
-        setError(data.error);
-        setSuccess(data.success);
+        setError(data?.error);
+        // TODO: Add when we add 2FA
+        // setSuccess(data.success);
       });
     });
-    // }, 200);
   };
 
   return (
@@ -96,7 +98,7 @@ export const LoginForm = () => {
             />
           </div>
           <FormSuccess message={success} />
-          <FormError message={error} />
+          <FormError message={error || urlError} />
           {isPending ? (
             <Button disabled className="w-full">
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

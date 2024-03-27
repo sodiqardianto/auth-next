@@ -32,7 +32,6 @@ export default auth((req) => {
     return Response.redirect(new URL("/auth/login", nextUrl))
   }
   return null
-
 })
 
 // Optionally, don't invoke Middleware on some paths

@@ -23,8 +23,11 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
-  const searchParams = useSearchParams()
-  const urlError = searchParams.get("error") == "OAuthAccountNotLinked" ? "Email already in use with dfferent provider!" : ""
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") == "OAuthAccountNotLinked"
+      ? "Email already in use with dfferent provider!"
+      : "";
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -44,8 +47,7 @@ export const LoginForm = () => {
     startTransition(() => {
       login(values).then((data: any) => {
         setError(data?.error);
-        // TODO: Add when we add 2FA
-        // setSuccess(data.success);
+        setSuccess(data.success);
       });
     });
   };
